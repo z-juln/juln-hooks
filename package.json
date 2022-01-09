@@ -8,8 +8,26 @@
     "test": "jest",
     "new": "node ./scripts/new.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "juln-hooks",
+    "hooks",
+    "juln",
+    "react"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/z-juln/juln-hooks"
+  },
+  "bugs": {
+    "email": "1850021148@qq.com"
+  },
+  "contributors": [
+    {
+      "name": "juln",
+      "email": "1850021148@qq.com"
+    }
+  ],
+  "author": "juln",
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^27.4.0",
