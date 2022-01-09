@@ -21,5 +21,9 @@ export default {
       file: './lib/index.es.js',
       format: 'es',
     }),
+  ],
+  external: [
+    'react',
+    'react-router-dom',
   ]
 }

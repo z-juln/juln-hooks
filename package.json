@@ -5,17 +5,27 @@
   "main": "index.js",
   "scripts": {
     "build": "rollup --config",
-    "test": "jest"
+    "test": "jest",
+    "new": "node ./scripts/new.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^27.4.0",
+    "@types/qs": "^6.9.7",
+    "@types/react": "^17.0.38",
+    "chalk": "^4.0.0",
+    "inquirer": "^8.2.0",
     "jest": "^27.4.7",
     "rollup": "^2.63.0",
     "rollup-plugin-typescript2": "^0.31.1",
     "ts-jest": "^27.1.2",
     "typescript": "^4.5.4"
+  },
+  "dependencies": {
+    "qs": "^6.10.2",
+    "react": "^17.0.2",
+    "react-router-dom": "^6.2.1"
   }
 }
