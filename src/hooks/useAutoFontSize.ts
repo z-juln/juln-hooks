@@ -7,7 +7,7 @@ const useAutoFontSize = (
   useEffect(() => {
     const el = elRef.current;
     if (!el) return;
-    if (el.scrollHeight > el.clientHeight) {
+    if (el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth) {
       el.classList.add(cbClassName);
     } else {
       el.classList.remove(cbClassName);
