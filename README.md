@@ -1,30 +1,35 @@
 # juln-hooks
-自己的hooks集合
+
+自己的 hooks 集合
 
 ## useAutoFontSize
-文字超出容器时，追加一个className
+
+文字超出容器时，追加一个 className
+
 ```tsx
-import React, { useRef, memo } from 'react';
-import { useAutoFontSize } from 'juln-hooks';
-import style from './index.less';
+import React, { useRef, memo } from "react";
+import { useAutoFontSize } from "juln-hooks";
+import style from "./index.less";
 
 const AutoFontSizeContainer = ({
   tag: Tag,
   children,
 }: {
-  tag: keyof JSX.IntrinsicElements
-  children: string
+  tag: keyof JSX.IntrinsicElements;
+  children: string;
 }) => {
   const textRef = useRef<HTMLElement>(null);
   useAutoFontSize(textRef, style.overflow);
-  return <Tag className={style.container} ref={textRef}>
-    {children}
-  </Tag>;
+  return (
+    <Tag className={style.container} ref={textRef}>
+      {children}
+    </Tag>
+  );
 };
 
 export default memo(AutoFontSizeContainer) as typeof AutoFontSizeContainer;
-
 ```
+
 ```less
 // index.less
 .container {
@@ -38,23 +43,28 @@ export default memo(AutoFontSizeContainer) as typeof AutoFontSizeContainer;
 ```
 
 ## useQueryParams
+
 ```tsx
-import React, { memo } from 'react';
-import { useAutoFontSize } from 'juln-hooks';
+import React, { memo } from "react";
+import { useAutoFontSize } from "juln-hooks";
 
 const ScheduleDetailPage = () => {
+  const [queryParams, setQueryParams] = useQueryParams(["id", "time"]);
 
-  const [queryParams, setQueryParams] = useQueryParams(['id', 'time']);
-
-  return <>
-    <p>id: {queryParams.id}</p>
-    <p>time: {queryParams.time}</p>
-    <p
-      onClick={() => setQueryParams({ time: '20220109' })}
-    >set time = 20220109</p>
-  </>;
+  return (
+    <>
+      <p>id: {queryParams.id}</p>
+      <p>time: {queryParams.time}</p>
+      <p onClick={() => setQueryParams({ time: "20220109" })}>
+        set time = 20220109
+      </p>
+    </>
+  );
 };
 
 export default memo(ScheduleDetailPage);
-
 ```
+
+## useCallbackState
+
+TODO: useCallbackState 说明
