@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 
 const useAutoFontSize = (
   elRef: React.RefObject<HTMLElement>,
-  cbClassName: string // 溢出时元素的className
+  /** 溢出时元素的className */
+  cbClassName: string,
 ) => {
   useEffect(() => {
     const el = elRef.current;
