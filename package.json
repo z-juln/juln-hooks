@@ -1,7 +1,7 @@
 {
   "name": "juln-hooks",
-  "version": "1.0.6",
-  "description": "",
+  "version": "1.0.7",
+  "description": "juln自己的 hooks 集合",
   "main": "./lib/index.umd.js",
   "module": "./lib/index.es.js",
   "typings": "./lib/index.d.ts",
