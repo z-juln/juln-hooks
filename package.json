@@ -1,14 +1,16 @@
 {
   "name": "juln-hooks",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "",
   "main": "./lib/index.umd.js",
   "module": "./lib/index.es.js",
+  "typings": "./lib/index.d.ts",
   "sideEffects": false,
   "scripts": {
     "build": "rollup --config",
     "test": "jest",
-    "new": "node ./scripts/new.js"
+    "new": "node ./scripts/new.js",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "juln-hooks",
