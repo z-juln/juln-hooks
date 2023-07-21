@@ -10,4 +10,4 @@ export { default as useQueryParams } from './hooks/useQueryParams';
 export { default as useAutoFontSize } from './hooks/useAutoFontSize';
 
 // react-help
-export { reactNodeArray_join }from './react-help/reactNodeArray_join';
+export { reactNodeArray_join }from './react-help/reactNode';
