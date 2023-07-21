@@ -24,10 +24,32 @@ juln 自己的 hooks 和 react-help 集合（已完全支持 tree-shaking）
 
 ### externalState
 
-在 useState 的基础上做封装, 支持外部 setState 的操作
+支持外部 setState 的操作
+
+基于 recoil 实现, 所以使用前需要需要 `npm i recoil -S`
+
+如果项目中已经使用了 recoil, 可以直接把 RecoilRoot 替换成 ExternalRoot
+
+**_注: 项目中只能出现一个 RecoilRoot 或者 ExternalRoot_**
+
+App.tsx
 
 ```jsx
-import { externalState } from "juln-hooks";
+import Counter from "./Counter";
+
+const App = () => {
+  return (
+    <ExternalRoot>
+      <Counter />
+    </ExternalRoot>
+  );
+};
+```
+
+Counter.tsx
+
+```jsx
+import { externalState, ExternalStateRoot } from "juln-hooks";
 
 const [useCount, setExternalCount] = externalState<number>();
 
