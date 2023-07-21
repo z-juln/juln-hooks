@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import EventEmitter from "eventemitter3";
 import {
   RecoilRoot,
@@ -11,19 +11,58 @@ import { nanoid } from "nanoid";
 
 type ValOrUpdater<S = unknown> = S | ((currVal: S) => S);
 
-const stateMapAtom = atom<Record<string, any>>({
+type StateMap = Record<string, any>;
+
+const stateMapAtom = atom<StateMap>({
   key: `externalState/stateMapAtom--${nanoid()}`,
   default: {},
 });
 const ee = new EventEmitter();
+const initialStateMap: StateMap = {};
 
 const _ExternalStateRoot: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [stateMap, setStateMap] = useRecoilState(stateMapAtom);
 
+  const setState = useCallback(
+    (stateId: string, valOrUpdater: ValOrUpdater) => {
+      setStateMap((prevStateMap) => {
+        let newStateMap: StateMap;
+        const hasState = Object.hasOwnProperty.call(prevStateMap, stateId);
+        const initialState = initialStateMap[stateId];
+        if (!hasState && initialState) {
+          const initialState = initialStateMap[stateId];
+          delete initialStateMap[stateId];
+          newStateMap = {
+            ...prevStateMap,
+            [stateId]: initialState,
+          };
+        } else if (!hasState) {
+          newStateMap = prevStateMap;
+        } else {
+          newStateMap = {
+            ...prevStateMap,
+            [stateId]:
+              typeof valOrUpdater === "function"
+                ? (valOrUpdater as Function)(prevStateMap[stateId])
+                : valOrUpdater,
+          };
+        }
+        return newStateMap;
+      });
+    },
+    []
+  );
+
   useEffect(() => {
-    ee.on(
+    // init
+    Object.entries(initialStateMap).forEach(([stateId, initialState]) => {
+      setState(stateId, initialState);
+    });
+
+    // listener
+    ee.addListener(
       "setState",
       ({
         stateId,
@@ -32,45 +71,28 @@ const _ExternalStateRoot: React.FC<{ children: React.ReactNode }> = ({
         stateId: string;
         valOrUpdater: ValOrUpdater;
       }) => {
-        setStateMap((prevStateMap) => {
-          const state = prevStateMap[stateId];
-          if (!state) return prevStateMap;
-          return {
-            ...prevStateMap,
-            [stateId]:
-              typeof valOrUpdater === "function"
-                ? (valOrUpdater as Function)(state)
-                : valOrUpdater,
-          };
-        });
+        setState(stateId, valOrUpdater);
       }
     );
-    ee.on(
-      "newState",
-      ({
-        stateId,
-        initialState,
-      }: {
-        stateId: string;
-        initialState: unknown;
-      }) => {
-        setStateMap((prevStateMap) => ({
-          ...prevStateMap,
-          [stateId]: initialState,
-        }));
-      }
-    );
+    return () => {
+      ee.removeAllListeners();
+      Object.keys(stateMap).forEach((stateId) => {
+        delete initialStateMap[stateId];
+      });
+    };
   }, []);
-
-  useEffect(() => {
-    ee.emit("stateUpdate", stateMap);
-  }, [stateMap]);
 
   return <>{children}</>;
 };
 
-const newState = (stateId: string, initialState: unknown) =>
-  ee.emit("newState", { stateId, initialState });
+const setState = (stateId: string, valOrUpdater: unknown) => {
+  ee.emit("setState", { stateId, valOrUpdater });
+};
+
+const newState = (stateId: string, initialState: unknown) => {
+  initialStateMap[stateId] = initialState;
+  setState(stateId, initialState);
+};
 
 export const ExternalStateRoot: React.FC<RecoilRootProps> = ({
   children,
@@ -85,17 +107,35 @@ export const ExternalStateRoot: React.FC<RecoilRootProps> = ({
 
 const externalState = <S = unknown,>(initialState: S) => {
   const stateId = nanoid();
-  const stateAtom = atom({
-    key: stateId,
-    default: initialState,
-  });
 
   newState(stateId, initialState);
 
-  const useState = () => useRecoilState(stateAtom);
+  const useState = (): readonly [S, SetterOrUpdater<S>] => {
+    const [stateMap, setStateMap] = useRecoilState(stateMapAtom);
+
+    const state: S = useMemo(() => {
+      return Object.hasOwnProperty.call(initialStateMap, stateId)
+        ? initialStateMap[stateId]
+        : stateMap[stateId];
+    }, [stateMap]);
+
+    const setState: SetterOrUpdater<S> = (valOrUpdater) => {
+      setStateMap((prevStateMap) => {
+        return {
+          ...prevStateMap,
+          [stateId]:
+            typeof valOrUpdater === "function"
+              ? (valOrUpdater as Function)(state)
+              : valOrUpdater,
+        };
+      });
+    };
+
+    return [state, setState];
+  };
 
   const setExternalState: SetterOrUpdater<S> = (valOrUpdater) =>
-    ee.emit("setState", { stateId, valOrUpdater });
+    setState(stateId, valOrUpdater);
 
   return [useState, setExternalState] as const;
 };
