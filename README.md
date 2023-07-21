@@ -1,8 +1,8 @@
 # juln-hooks
 
-juln 自己的 hooks 集合 (支持 tree-shaking)
+juln 自己的 hooks 和 react-help 集合（已完全支持 tree-shaking）
 
-## 通用
+## 通用 hooks
 
 ### useMount
 
@@ -68,7 +68,7 @@ const ScheduleDetailPage = () => {
 export default ScheduleDetailPage;
 ```
 
-## 特殊
+## 特殊 hooks
 
 ### useAutoFontSize
 
@@ -109,3 +109,9 @@ export default memo(AutoFontSizeContainer) as typeof AutoFontSizeContainer;
   }
 }
 ```
+
+## 通用 react-help
+
+### reactNodeArray_join
+
+在 ReactNode 数组的 item 的每个间隔都加入 node
