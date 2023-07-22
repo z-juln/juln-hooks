@@ -47,14 +47,14 @@ const [useCount, counterDispatch] = externalState<
 expectType<() => readonly [number, SetterOrUpdater<number>]>(useCount);
 expectType<SetterOrUpdater<number>>(counterDispatch.__dangerouslySet);
 
-expectError<any>(
+expectError(
   counterDispatch('unknown')
 );
-expectType<any>(
+expectType<void>(
   counterDispatch('increment')
 );
 const actionType = 'add';
 const errPayload = '';
-expectError<any>(
+expectError(
   counterDispatch(actionType, errPayload)
 );
