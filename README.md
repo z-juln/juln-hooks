@@ -65,7 +65,7 @@ type CounterAction =
   | { type: "add"; payload: number; }
   | { type: "undo&do"; payload: 'undo' | 'do'; };
 
-const [useCount, _counterDispatchMap] = externalState<
+const [useCount, _counterDispatch] = externalState<
   number,
   CounterAction,
 >(0, (count, { type, payload }) => {
@@ -94,13 +94,25 @@ const Counter = () => {
 };
 
 // 推荐使用reducer定义的操作
-export const counterDispatchMap = _counterDispatchMap;
+export const counterDispatch = _counterDispatch;
 
-// 不推荐使用 dispatchMap.__dangerouslySet
+// 不推荐使用 dispatch.__dangerouslySet
 export const increment = () =>
-  _counterDispatchMap.__dangerouslySet((c) => c + 1);
+  _counterDispatch.__dangerouslySet((c) => c + 1);
 
 export default Counter;
+```
+
+外部.ts
+
+```js
+import { counterDispatch } from './counter';
+
+// diaptch用法如下
+// 有严格的类型校验, type字符串会提示, 打错了报错, 参数数量和参数类型与当前type对应不上都会报错
+counterDispatch('increment');
+counterDispatch('add', 100);
+...
 ```
 
 ### useQueryParams
