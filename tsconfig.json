@@ -101,6 +101,7 @@
     "__test__",
     "lib",
     "es",
-    "types"
+    "types",
+    "test-d"
   ]
 }

@@ -8,6 +8,7 @@ import {
   useRecoilState,
 } from "recoil";
 import { nanoid } from "nanoid";
+import { Action, Dispatch, Reducer } from "./reducer";
 
 type ValOrUpdater<S = unknown> = S | ((currVal: S) => S);
 
@@ -61,7 +62,7 @@ const _ExternalStateRoot: React.FC<{ children: React.ReactNode }> = ({
       setState(stateId, initialState);
     });
 
-    // listener
+    // listener setState
     ee.addListener(
       "setState",
       ({
@@ -74,6 +75,28 @@ const _ExternalStateRoot: React.FC<{ children: React.ReactNode }> = ({
         setState(stateId, valOrUpdater);
       }
     );
+
+    // listener dispatch
+    ee.addListener(
+      "dispatch",
+      ({
+        stateId,
+        reducer,
+        type,
+        payload,
+      }: {
+        stateId: string;
+        reducer: Reducer;
+        type: string;
+        payload: any;
+      }) => {
+        setState(stateId, (preState: any) => {
+          const newState = reducer(preState, { type, payload });
+          return newState;
+        });
+      }
+    );
+
     return () => {
       ee.removeAllListeners();
       Object.keys(stateMap).forEach((stateId) => {
@@ -85,13 +108,22 @@ const _ExternalStateRoot: React.FC<{ children: React.ReactNode }> = ({
   return <>{children}</>;
 };
 
-const setState = (stateId: string, valOrUpdater: unknown) => {
+const emit_setState = (stateId: string, valOrUpdater: unknown) => {
   ee.emit("setState", { stateId, valOrUpdater });
 };
 
-const newState = (stateId: string, initialState: unknown) => {
+const emit_newState = (stateId: string, initialState: unknown) => {
   initialStateMap[stateId] = initialState;
-  setState(stateId, initialState);
+  emit_setState(stateId, initialState);
+};
+
+const emit_dispatch = (
+  stateId: string,
+  reducer: Reducer<any, any>,
+  type: string,
+  payload: any
+) => {
+  ee.emit("dispatch", { stateId, reducer, type, payload });
 };
 
 export const ExternalStateRoot: React.FC<RecoilRootProps> = ({
@@ -105,10 +137,20 @@ export const ExternalStateRoot: React.FC<RecoilRootProps> = ({
   );
 };
 
-const externalState = <S = unknown,>(initialState: S) => {
+function externalState<S = unknown, A extends Action = Action>(
+  initialState: S
+): readonly [() => readonly [S, SetterOrUpdater<S>], Dispatch<S, A, false>];
+function externalState<S = unknown, A extends Action = Action>(
+  initialState: S,
+  reducer?: Reducer<S, A>
+): readonly [() => readonly [S, SetterOrUpdater<S>], Dispatch<S, A, true>];
+function externalState<S = unknown, A extends Action = Action>(
+  initialState: S,
+  reducer?: Reducer<S, A>
+) {
   const stateId = nanoid();
 
-  newState(stateId, initialState);
+  emit_newState(stateId, initialState);
 
   const useState = (): readonly [S, SetterOrUpdater<S>] => {
     const [stateMap, setStateMap] = useRecoilState(stateMapAtom);
@@ -135,9 +177,19 @@ const externalState = <S = unknown,>(initialState: S) => {
   };
 
   const setExternalState: SetterOrUpdater<S> = (valOrUpdater) =>
-    setState(stateId, valOrUpdater);
+    emit_setState(stateId, valOrUpdater);
 
-  return [useState, setExternalState] as const;
-};
+  // @ts-ignore
+  const dispatch: Dispatch<S, A, true> = reducer
+    ? (type: string, payload?: unknown): void => {
+        if (!reducer) return;
+        emit_dispatch(stateId, reducer, type, payload);
+      }
+    : {};
+
+  dispatch.__dangerouslySet = setExternalState;
+
+  return [useState, dispatch] as const;
+}
 
 export default externalState;

@@ -24,18 +24,26 @@ juln 自己的 hooks 和 react-help 集合（已完全支持 tree-shaking）
 
 ### externalState
 
-支持外部 setState 的操作
+支持组件外部控制组件内部的状态 (首推 reducer 的操作方式)
 
-基于 recoil 实现, 所以使用前需要需要 `npm i recoil -S`
+目的: externalState 的目的是为了减轻大项目中的 store
 
-如果项目中已经使用了 recoil, 可以直接把 RecoilRoot 替换成 ExternalRoot
+特点:
 
-**_注: 项目中只能出现一个 RecoilRoot 或者 ExternalRoot_**
+1. 便于极大减轻大项目中的 store
+2. 方便使用, 上手难度低
+3. 支持超强的 ts 类型提示, dispatch 的任何参数都能得到最严格的约束
 
-App.tsx
+适用于哪些 state: 有些状态只是用于简单的组件穿透的, 逻辑上并不属于 store, 如一个 Modal，很多地方都能去控制它, 但是逻辑上不应该属于 store
+
+基于 [`recoil`](https://www.npmjs.com/package/recoil) 实现, 所以使用前需要额外安装 `recoil`: `npm i recoil -S`
+
+如果项目中已经使用了 `recoil`, 直接用 ExternalRoot 替换 RecoilRoot
+
+./app.tsx
 
 ```jsx
-import Counter from "./Counter";
+import Counter from "./counter";
 
 const App = () => {
   return (
@@ -46,12 +54,34 @@ const App = () => {
 };
 ```
 
-Counter.tsx
+./counter.tsx (使用 reducer)
 
 ```jsx
 import { externalState, ExternalStateRoot } from "juln-hooks";
 
-const [useCount, setExternalCount] = externalState<number>();
+type CounterAction =
+  | "increment"
+  | "decrement"
+  | { type: "add"; payload: number; }
+  | { type: "undo&do"; payload: 'undo' | 'do'; };
+
+const [useCount, _counterDispatchMap] = externalState<
+  number,
+  CounterAction,
+>(0, (count, { type, payload }) => {
+  switch (type) {
+    case "increment":
+      return count + 1;
+    case "decrement":
+      return count - 1;
+    case "add":
+      return count + payload;
+    case "undo&do":
+      return payload === 'undo' ? xxx : xxx;
+    default:
+      return count;
+  }
+});
 
 const Counter = () => {
   const [count, setCount] = useCount(0);
@@ -63,7 +93,12 @@ const Counter = () => {
   );
 };
 
-export const increment = () => setExternalCount((c) => c + 1);
+// 推荐使用reducer定义的操作
+export const counterDispatchMap = _counterDispatchMap;
+
+// 不推荐使用 dispatchMap.__dangerouslySet
+export const increment = () =>
+  _counterDispatchMap.__dangerouslySet((c) => c + 1);
 
 export default Counter;
 ```
