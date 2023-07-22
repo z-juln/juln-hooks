@@ -8,7 +8,7 @@ import {
   useRecoilState,
 } from "recoil";
 import { nanoid } from "nanoid";
-import { Action, Dispatch, Reducer } from "./reducer";
+import { Action, Dispatch, Reducer } from "./reducer-type";
 
 type ValOrUpdater<S = unknown> = S | ((currVal: S) => S);
 

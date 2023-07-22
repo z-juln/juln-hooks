@@ -1,6 +1,14 @@
 import { expectError, expectType } from 'tsd';
 import { externalState } from '../src';
 import { SetterOrUpdater } from 'recoil';
+import { Dispatch } from '../src/hooks/externalState/reducer-type';
+
+// Dispatch 范型测试
+expectType<{
+  __dangerouslySet: SetterOrUpdater<any>;
+}>(
+  {} as Dispatch<any, any, false>
+);
 
 // 无reducer
 interface Store {
