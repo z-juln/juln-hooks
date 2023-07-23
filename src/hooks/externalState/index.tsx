@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo } from "react";
-import EventEmitter from "eventemitter3";
 import {
   RecoilRoot,
   RecoilRootProps,
@@ -9,6 +8,8 @@ import {
 } from "recoil";
 import { nanoid } from "nanoid";
 import { Action, Dispatch, Reducer } from "./reducer-type";
+import ee from "./event-emit";
+import { Writable } from "@juln/type-fest";
 
 type ValOrUpdater<S = unknown> = S | ((currVal: S) => S);
 
@@ -18,7 +19,6 @@ const stateMapAtom = atom<StateMap>({
   key: `externalState/stateMapAtom--${nanoid()}`,
   default: {},
 });
-const ee = new EventEmitter();
 const initialStateMap: StateMap = {};
 
 const _ExternalStateRoot: React.FC<{ children: React.ReactNode }> = ({
@@ -28,29 +28,54 @@ const _ExternalStateRoot: React.FC<{ children: React.ReactNode }> = ({
 
   const setState = useCallback(
     (stateId: string, valOrUpdater: ValOrUpdater) => {
+      const NEVER_OLD_STATE = Symbol("never");
+
       setStateMap((prevStateMap) => {
-        let newStateMap: StateMap;
-        const hasState = Object.hasOwnProperty.call(prevStateMap, stateId);
-        const initialState = initialStateMap[stateId];
-        if (!hasState && initialState) {
+        const checkUpdateAndEmit = (oldState: any, newState: any): boolean => {
+          if (oldState === newState) return false;
+          ee.emit("stateUpdate", { stateId, state: newState });
+          return true;
+        };
+
+        const getReturnedStateMap = (
+          oldState: any,
+          newState: any
+        ): StateMap => {
+          const hasUpdate = checkUpdateAndEmit(oldState, newState);
+          if (hasUpdate) {
+            return {
+              ...prevStateMap,
+              [stateId]: newState,
+            };
+          }
+          return prevStateMap;
+        };
+
+        const hasInitialState = Object.hasOwnProperty.call(
+          initialStateMap,
+          stateId
+        );
+        const hasOldState = Object.hasOwnProperty.call(prevStateMap, stateId);
+
+        if (hasOldState) {
+          const oldState = prevStateMap[stateId];
+          const newState =
+            typeof valOrUpdater === "function"
+              ? (valOrUpdater as Function)(oldState)
+              : valOrUpdater;
+
+          return getReturnedStateMap(oldState, newState);
+        } else if (hasInitialState) {
+          // 初始化
           const initialState = initialStateMap[stateId];
           delete initialStateMap[stateId];
-          newStateMap = {
-            ...prevStateMap,
-            [stateId]: initialState,
-          };
-        } else if (!hasState) {
-          newStateMap = prevStateMap;
+
+          const newState = initialState;
+          return getReturnedStateMap(NEVER_OLD_STATE, newState);
         } else {
-          newStateMap = {
-            ...prevStateMap,
-            [stateId]:
-              typeof valOrUpdater === "function"
-                ? (valOrUpdater as Function)(prevStateMap[stateId])
-                : valOrUpdater,
-          };
+          // 兜底: 不改变
+          return prevStateMap;
         }
-        return newStateMap;
       });
     },
     []
@@ -117,15 +142,6 @@ const emit_newState = (stateId: string, initialState: unknown) => {
   emit_setState(stateId, initialState);
 };
 
-const emit_dispatch = (
-  stateId: string,
-  reducer: Reducer<any, any>,
-  type: string,
-  payload: any
-) => {
-  ee.emit("dispatch", { stateId, reducer, type, payload });
-};
-
 export const ExternalStateRoot: React.FC<RecoilRootProps> = ({
   children,
   ...restProps
@@ -137,13 +153,25 @@ export const ExternalStateRoot: React.FC<RecoilRootProps> = ({
   );
 };
 
+type ExternalState<S> = { readonly value: S };
+
+type ExternalStateReturnType<
+  S,
+  A extends Action,
+  HasReducer extends boolean
+> = readonly [
+  useState: () => readonly [S, SetterOrUpdater<S>],
+  dispatch: Dispatch<S, A, HasReducer>,
+  __dangerousExternalState: ExternalState<S>
+];
+
 function externalState<S = unknown, A extends Action = Action>(
   initialState: S
-): readonly [() => readonly [S, SetterOrUpdater<S>], Dispatch<S, A, false>];
+): ExternalStateReturnType<S, A, false>;
 function externalState<S = unknown, A extends Action = Action>(
   initialState: S,
-  reducer?: Reducer<S, A>
-): readonly [() => readonly [S, SetterOrUpdater<S>], Dispatch<S, A, true>];
+  reducer: Reducer<S, A>
+): ExternalStateReturnType<S, A, true>;
 function externalState<S = unknown, A extends Action = Action>(
   initialState: S,
   reducer?: Reducer<S, A>
@@ -183,13 +211,23 @@ function externalState<S = unknown, A extends Action = Action>(
   const dispatch: Dispatch<S, A, true> = reducer
     ? (type: string, payload?: unknown): void => {
         if (!reducer) return;
-        emit_dispatch(stateId, reducer, type, payload);
+        ee.emit("dispatch", { stateId, reducer, type, payload });
       }
     : {};
 
   dispatch.__dangerouslySet = setExternalState;
 
-  return [useState, dispatch] as const;
+  const __dangerousExternalState: ExternalState<S> = {
+    value: initialState,
+  };
+
+  ee.addListener("stateUpdate", ({ stateId: currentStateId, state }) => {
+    if (stateId === currentStateId) {
+      (__dangerousExternalState as Writable<ExternalState<S>>).value = state;
+    }
+  });
+
+  return [useState, dispatch, __dangerousExternalState] as const;
 }
 
 export default externalState;

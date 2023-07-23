@@ -17,10 +17,13 @@ interface Store {
 const defaultStore: Store = {
   userInfo: {},
 };
-const [useStore, storeDispatchMap] = externalState(defaultStore);
+const [useStore, storeDispatchMap, __dangerousExternalStore] = externalState(defaultStore);
 
 expectType<() => readonly [Store, SetterOrUpdater<Store>]>(useStore);
 expectType<SetterOrUpdater<Store>>(storeDispatchMap.__dangerouslySet);
+expectType<{ readonly value: Store }>(
+  __dangerousExternalStore
+);
 expectType<{ __dangerouslySet: SetterOrUpdater<Store>; }>(
   storeDispatchMap
 );
@@ -34,7 +37,7 @@ type CounterAction =
   | { type: "add"; payload: number; }
   | { type: "add&reduce"; payload: 'add' | 'reduce'; };
 
-const [useCount, counterDispatch] = externalState<
+const [useCount, counterDispatch, __dangerousExternalCount] = externalState<
   number,
   CounterAction
 >(0, (count, { type, payload }) => {
@@ -54,6 +57,9 @@ const [useCount, counterDispatch] = externalState<
 
 expectType<() => readonly [number, SetterOrUpdater<number>]>(useCount);
 expectType<SetterOrUpdater<number>>(counterDispatch.__dangerouslySet);
+expectType<{ readonly value: number }>(
+  __dangerousExternalCount
+);
 
 expectError(
   counterDispatch('unknown')
