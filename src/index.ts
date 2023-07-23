@@ -5,7 +5,11 @@ export {
   useCheckUnMounted,
   useIsBrowser,
 } from './hooks/mount';
-export { default as externalState, ExternalStateRoot } from './hooks/externalState';
+export {
+  ExternalStateRoot,
+  default as externalState,
+  dangerous_externalState,
+} from './hooks/externalState';
 export { default as useQueryParams } from './hooks/useQueryParams';
 export { default as useAutoFontSize } from './hooks/useAutoFontSize';
 

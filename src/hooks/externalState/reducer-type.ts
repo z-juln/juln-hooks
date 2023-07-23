@@ -1,4 +1,4 @@
-import { IsNever, UnionToIntersection } from "@juln/type-fest";
+import { UnionToIntersection } from "@juln/type-fest";
 import { SetterOrUpdater } from "recoil";
 
 type ComplexAction<Type = string, Payload = unknown> = {
@@ -32,6 +32,7 @@ export type Dispatch<
   S = unknown,
   A extends Action = Action,
   HasReducer = false,
-> = (HasReducer extends true ? Dispatch_without_dangerouslySet<A> : {}) & {
-  __dangerouslySet: SetterOrUpdater<S>;
-};
+  Strict extends boolean = false
+> = (HasReducer extends true ? Dispatch_without_dangerouslySet<A> : {}) & (Strict extends true ? {} : {
+  readonly __dangerouslySet: SetterOrUpdater<S>;
+});

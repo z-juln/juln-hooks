@@ -43,6 +43,7 @@ juln 自己的 hooks 和 react-help 集合（已完全支持 tree-shaking）
 ./app.tsx
 
 ```jsx
+import { ExternalStateRoot } from "juln-hooks";
 import Counter from "./counter";
 
 const App = () => {
@@ -57,7 +58,8 @@ const App = () => {
 ./counter.tsx
 
 ```jsx
-import { externalState, ExternalStateRoot } from "juln-hooks";
+// 推荐使用externalState而不是dangerous_externalState, dangerous_externalState会暴露出一些不合理的api
+import { dangerous_externalState, externalState } from "juln-hooks";
 
 type CounterAction =
   | "increment"
@@ -65,7 +67,8 @@ type CounterAction =
   | { type: "add"; payload: number; }
   | { type: "undo&do"; payload: 'undo' | 'do'; };
 
-const [useCount, _counterDispatch, __dangerousExternalCount] = externalState<
+// 使用externalState时, 没有第三个参数__dangerousExternalCount
+const [useCount, _counterDispatch, __dangerousExternalCount] = dangerous_externalState<
   number,
   CounterAction,
 >(0, (count, { type, payload }) => {
@@ -100,6 +103,7 @@ const Counter = () => {
 export const counterDispatch = _counterDispatch;
 
 // 绕过reducer直接设置, 不推荐使用!!!
+// 使用externalState时, 不会暴露出__dangerouslySet这个api
 export const increment = () =>
   _counterDispatch.__dangerouslySet((c) => c + 1);
 

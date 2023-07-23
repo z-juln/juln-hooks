@@ -9,7 +9,7 @@ import {
 import { nanoid } from "nanoid";
 import { Action, Dispatch, Reducer } from "./reducer-type";
 import ee from "./event-emit";
-import { Writable } from "@juln/type-fest";
+import { FixedLengthArray, PureArray, Writable } from "@juln/type-fest";
 
 type ValOrUpdater<S = unknown> = S | ((currVal: S) => S);
 
@@ -158,21 +158,25 @@ type ExternalState<S> = { readonly value: S };
 type ExternalStateReturnType<
   S,
   A extends Action,
-  HasReducer extends boolean
-> = readonly [
-  useState: () => readonly [S, SetterOrUpdater<S>],
-  dispatch: Dispatch<S, A, HasReducer>,
-  __dangerousExternalState: ExternalState<S>
-];
+  HasReducer extends boolean,
+  Strict extends boolean = false
+> = PureArray<
+  readonly [
+    useState: () => readonly [S, SetterOrUpdater<S>],
+    dispatch: Dispatch<S, A, HasReducer, Strict>,
+    __dangerousExternalState: Strict extends true ? never : ExternalState<S>
+  ]
+>;
 
-function externalState<S = unknown, A extends Action = Action>(
+// @ts-ignore
+export function dangerous_externalState<S = unknown, A extends Action = Action>(
   initialState: S
-): ExternalStateReturnType<S, A, false>;
-function externalState<S = unknown, A extends Action = Action>(
+): ExternalStateReturnType<S, A, false, false>;
+export function dangerous_externalState<S = unknown, A extends Action = Action>(
   initialState: S,
   reducer: Reducer<S, A>
-): ExternalStateReturnType<S, A, true>;
-function externalState<S = unknown, A extends Action = Action>(
+): ExternalStateReturnType<S, A, true, false>;
+export function dangerous_externalState<S = unknown, A extends Action = Action>(
   initialState: S,
   reducer?: Reducer<S, A>
 ) {
@@ -215,6 +219,7 @@ function externalState<S = unknown, A extends Action = Action>(
       }
     : {};
 
+  // @ts-ignore
   dispatch.__dangerouslySet = setExternalState;
 
   const __dangerousExternalState: ExternalState<S> = {
@@ -228,6 +233,20 @@ function externalState<S = unknown, A extends Action = Action>(
   });
 
   return [useState, dispatch, __dangerousExternalState] as const;
+}
+
+// @ts-ignore
+function externalState<S = unknown, A extends Action = Action>(
+  initialState: S
+): ExternalStateReturnType<S, A, false, true>;
+function externalState<S = unknown, A extends Action = Action>(
+  initialState: S,
+  reducer: Reducer<S, A>
+): ExternalStateReturnType<S, A, true, true>;
+// @ts-ignore
+function externalState(...args) {
+  // @ts-ignore
+  return dangerous_externalState(...args).slice(0, 2);
 }
 
 export default externalState;
