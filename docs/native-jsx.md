@@ -85,8 +85,14 @@ const profile = (
 ## 用法 3: [babel-plugin-transform-react-jsx](https://babeljs.io/docs/babel-plugin-transform-react-jsx) custom-jsx-library 模式
 
 ```tsx
+// webpack下
 /** @jsxImportSource juln-hooks/native-jsx */
 import * as React from "juln-hooks/native-jsx";
+
+// 不是webpack下
+// webpack下导入
+/** @jsxImportSource juln-hooks/lib/native-jsx */
+import * as React from "juln-hooks/lib/native-jsx";
 
 const profile = (
   <div>

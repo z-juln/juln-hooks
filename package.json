@@ -1,11 +1,16 @@
 {
   "name": "juln-hooks",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "juln 自己的 hooks 和 react-help 集合 (已完全支持 tree-shaking)",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
   "types": "./types/index.d.ts",
   "sideEffects": false,
+  "exports": {
+    ".": "./lib/index.js",
+    "./native-jsx": "./lib/native-jsx/index.js",
+    "./native-jsx/jsx-runtime": "./lib/native-jsx/jsx-runtime.js"
+  },
   "files": [
     "lib",
     "src",
