@@ -130,3 +130,7 @@ const profile = _jsxs("div", {
   ],
 });
 ```
+
+## 一些问题
+
+ts 类型问题: jsx 返回的类型为 JSX.Element, 这个似乎没法改, 只能通过 as any as HTMLElement 去强转
