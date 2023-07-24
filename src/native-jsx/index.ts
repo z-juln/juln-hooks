@@ -26,6 +26,11 @@ export const createElement = <T extends HTMLElement = HTMLElement>(
   props: Props,
   ...children: HTMLElement[]
 ): T => {
+  if (tag instanceof DocumentFragment) {
+    tag.append(...children);
+    // @ts-ignore
+    return tag;
+  }
   if (typeof tag === 'function') return tag({ ...props, children });
 
   const el = document.createElement(tag) as T;
@@ -37,13 +42,13 @@ export const createElement = <T extends HTMLElement = HTMLElement>(
 
     if (Object.prototype.hasOwnProperty.call(propMap, propKey)) {
       propMap[propKey]!(el, props);
-    }
-
-    if (propKey.startsWith('on')) {
-      const attrKey = changeCase(propKey, 'lower-camel-case');
-      el.setAttribute(attrKey, attrKey);
     } else {
-      el.setAttribute(propKey, propValue);
+      if (propKey.startsWith('on')) {
+        const attrKey = changeCase(propKey, 'lower-camel-case');
+        el.setAttribute(attrKey, attrKey);
+      } else {
+        el.setAttribute(propKey, propValue);
+      }
     }
   }
 

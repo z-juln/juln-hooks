@@ -70,6 +70,7 @@ export var Test = React.createElement(
 
 ```tsx
 /** @jsxRuntime classic */
+// @ts-ignore
 import * as React from "juln-hooks/native-jsx";
 
 const profile = (
@@ -78,6 +79,18 @@ const profile = (
     <h3>{[user.firstName, user.lastName].join(" ")}</h3>
   </div>
 );
+```
+
+注:
+
+```tsx
+// webpack下导入
+// @ts-ignore
+import * as React from "juln-hooks/native-jsx";
+
+// 不是webpack下导入
+// @ts-ignore
+import * as React from "juln-hooks/lib/native-jsx";
 ```
 
 输出结果: 同用法 1
@@ -85,14 +98,9 @@ const profile = (
 ## 用法 3: [babel-plugin-transform-react-jsx](https://babeljs.io/docs/babel-plugin-transform-react-jsx) custom-jsx-library 模式
 
 ```tsx
-// webpack下
 /** @jsxImportSource juln-hooks/native-jsx */
+// @ts-ignore
 import * as React from "juln-hooks/native-jsx";
-
-// 不是webpack下
-// webpack下导入
-/** @jsxImportSource juln-hooks/lib/native-jsx */
-import * as React from "juln-hooks/lib/native-jsx";
 
 const profile = (
   <div>
@@ -101,6 +109,8 @@ const profile = (
   </div>
 );
 ```
+
+注: 导入问题同用法 2
 
 输出结果:
 
