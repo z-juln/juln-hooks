@@ -26,12 +26,13 @@ export const createElement = <T extends HTMLElement = HTMLElement>(
   props: Props,
   ...children: HTMLElement[]
 ): T => {
-  if (tag instanceof DocumentFragment) {
-    tag.append(...children);
-    // @ts-ignore
-    return tag;
-  }
-  if (typeof tag === 'function') return tag({ ...props, children });
+  if (typeof tag === 'function') {
+    const el = tag({ ...props, children });
+    if (el instanceof DocumentFragment) {
+      el.append(...children);
+    }
+    return el;
+  };
 
   const el = document.createElement(tag) as T;
 
