@@ -1,3 +1,11 @@
+// externalState
+export {
+  ExternalStateRoot,
+  default as externalState,
+  dangerous_externalState,
+} from './hooks/externalState';
+export { defineStore } from './hooks/externalState/define-store';
+
 // hooks
 export {
   useMount,
@@ -5,11 +13,6 @@ export {
   useCheckUnMounted,
   useIsBrowser,
 } from './hooks/mount';
-export {
-  ExternalStateRoot,
-  default as externalState,
-  dangerous_externalState,
-} from './hooks/externalState';
 export { default as useQueryParams } from './hooks/useQueryParams';
 export { default as useAutoFontSize } from './hooks/useAutoFontSize';
 

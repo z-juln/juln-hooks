@@ -1,6 +1,14 @@
 import type { ReactNode } from 'react';
 
-/** 数组的item的每个间隔都加入node */
+/**
+ * 数组的item的每个间隔都加入node
+ * 
+ * @example
+ * const Tools = [<div />, <div />, <div />];
+ * 
+ * const ToolBar = reactNodeArray_join(Tools, <hr />);
+ * // [<div />, <hr />, <div />, <hr />, <div />]
+ */
 export const reactNodeArray_join = (
   reactNodeArray: ReactNode[],
   /** 一般是无副作用组件 */
