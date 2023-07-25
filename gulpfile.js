@@ -24,7 +24,16 @@ gulp.task('es', function () {
   const tsProject = ts.createProject('tsconfig.pro.json', {
     module: 'ESNext',
   });
-  return tsProject.src().pipe(tsProject()).pipe(gulp.dest('es/'));
+  return tsProject.src()
+    .pipe(tsProject())
+    .pipe(babel({
+      presets: [
+        ["@babel/preset-env", {
+          "modules": false,
+        }],
+      ],
+    }))
+    .pipe(gulp.dest('es/'));
 });
 
 gulp.task('declaration', function () {
