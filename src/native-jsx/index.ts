@@ -4,8 +4,21 @@ type Props<T extends HTMLElement = HTMLElement> = React.HTMLAttributes<T> & Reac
 type PropKeys = keyof Props;
 
 const propMap: Partial<Record<PropKeys, (el: HTMLElement , { className }: Props) => void>> = {
+  id: (el, { id }) => id && (el.id = id),
   className: (el, { className }) => className && el.setAttribute('class', className),
-  style: (el, { style }) => style && Object.entries(style).forEach(([k, v]) => el.style[k as any] = v),
+  style: (el, { style }) => style && Object.entries(style).forEach(([k, v]) => {
+    let realV = v;
+    if ([
+      'width', 'height', 'maxWidth', 'maxHeight', 'minWidth', 'minHeight',
+      'margin', 'marginTop', 'marginLeft', 'marginRight', 'marginBottom',
+      'padding', 'paddingTop', 'paddingLeft', 'paddingRight', 'paddingBottom',
+      'fontSize', 'lineHeight', 'textIndent',
+      'border', 'borderWidth',
+    ].includes(k) && typeof v === 'number') {
+      realV = v + 'px';
+    }
+    el.style[k as any] = realV;
+  }),
   children: () => {},
   defaultChecked: (el, { defaultChecked, checked }) => {
     if (typeof checked === 'undefined' && typeof defaultChecked == 'undefined') return;
