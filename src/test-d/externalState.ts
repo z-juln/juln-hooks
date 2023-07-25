@@ -1,8 +1,8 @@
 import { expectAssignable, expectError, expectType, printType } from 'tsd';
-import { externalState } from '../src';
+import { externalState } from '..';
 import { SetterOrUpdater } from 'recoil';
-import { Dispatch } from '../src/hooks/externalState/reducer-type';
-import { dangerous_externalState } from '../src/hooks/externalState';
+import { Dispatch } from '../hooks/externalState/reducer-type';
+import { dangerous_externalState } from '../hooks/externalState';
 
 // Dispatch 范型测试
 {
