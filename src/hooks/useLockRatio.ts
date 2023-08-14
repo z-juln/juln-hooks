@@ -12,9 +12,9 @@ export type LockedRatioStatus =
       ratio: null;
     }
   | {
-      active: boolean;
+      active: true;
       /** width / height */
-      ratio: number | null;
+      ratio: number;
     };
 
 export interface OnChange {
@@ -28,6 +28,7 @@ const useLockRatio = () => {
     h: null,
     unit: null,
   });
+
   const [lockedRatioStatus, setLockedRatioStatus] = useState<LockedRatioStatus>(
     {
       active: false,

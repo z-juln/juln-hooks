@@ -32,6 +32,7 @@ const SizeBox = () => {
       <button onClick={lockedRatioStatus.active ? unlock : lock}>
         {lockedRatioStatus.active ? "unlock" : "lock"} ratio
       </button>
+      {!!lockedRatioStatus.active && <p>current ratio: {lockedRatioStatus.ratio}</p>}
     </div>
   );
 };
