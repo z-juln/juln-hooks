@@ -61,6 +61,8 @@ const App = () => {
     opts: {
       /** handler不使用toggle模式, 点击时只负责打开float */
       disableHandlerToggle: false,
+      /** 点击其它dom时, 不关闭float */
+      disableBlurClose: false,
       /** 窗口失焦时, 不关闭float */
       disableWindowBlur: false,
     },
@@ -95,6 +97,8 @@ const {
 } = useFloatHandler.simple({
   /** handler不使用toggle模式, 点击时只负责打开float */
   disableHandlerToggle: false,
+  /** 点击其它dom时, 不关闭float */
+  disableBlurClose: false,
   /** 窗口失焦时, 不关闭float */
   disableWindowBlur: false,
 });

@@ -5,7 +5,11 @@ type GetItemOrItem<T> = (() => T) | T;
 type ElLick = GetItemOrItem<React.RefObject<HTMLElement> | HTMLElement>;
 
 type UseFloatHandlerOpts = {
+  /** handler不使用toggle模式, 点击时只负责打开float */
   disableHandlerToggle?: boolean;
+  /** 点击其它dom时, 不关闭float */
+  disableBlurClose?: boolean;
+  /** 窗口失焦时, 不关闭float */
   disableWindowBlur?: boolean;
 };
 
@@ -65,6 +69,7 @@ interface UseFloatHandler {
  */
 const useFloatHandler: UseFloatHandler = ({ handler, float, opts }) => {
   const disableHandlerToggle = opts?.disableHandlerToggle ?? false;
+  const disableBlurClose = opts?.disableBlurClose ?? false;
   const disableWindowBlur = opts?.disableWindowBlur ?? false;
 
   const [isShow, setIsShow] = useState(false);
@@ -85,7 +90,7 @@ const useFloatHandler: UseFloatHandler = ({ handler, float, opts }) => {
   }, [handler, disableHandlerToggle]);
 
   useEffect(() => {
-    if (disableWindowBlur) return;
+    if (disableBlurClose) return;
 
     const onClick = ({ target }: MouseEvent) => {
       if (!(target instanceof HTMLElement)) return;
@@ -102,7 +107,13 @@ const useFloatHandler: UseFloatHandler = ({ handler, float, opts }) => {
     };
     window.addEventListener("click", onClick);
     return () => window.removeEventListener("click", onClick);
-  }, [handler, float, disableWindowBlur]);
+  }, [handler, float, disableBlurClose]);
+
+  useEffect(() => {
+    if (disableWindowBlur) return;
+    window.addEventListener("blur", close);
+    return () => window.removeEventListener("blur", close);
+  }, [disableWindowBlur]);
 
   return {
     isShow,
