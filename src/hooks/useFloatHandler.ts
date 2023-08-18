@@ -1,8 +1,36 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type GetItemOrItem<T> = (() => T) | T;
 
 type ElLick = GetItemOrItem<React.RefObject<HTMLElement> | HTMLElement>;
+
+type UseFloatHandlerOpts = {
+  disableHandlerToggle?: boolean;
+  disableWindowBlur?: boolean;
+};
+
+type UseFloatHandlerReturn = {
+  isShow: boolean;
+  open: () => void;
+  toggle: () => void;
+  close: () => void;
+};
+
+interface UseFloatHandler {
+  ({
+    handler,
+    float,
+    opts,
+  }: {
+    handler: ElLick;
+    float: ElLick;
+    opts?: UseFloatHandlerOpts | undefined;
+  }): UseFloatHandlerReturn;
+  simple: (opts?: UseFloatHandlerOpts) => UseFloatHandlerReturn & {
+    handlerRef: React.MutableRefObject<any>;
+    floatRef: React.MutableRefObject<any>;
+  };
+}
 
 /**
  * 处理类似于 `打开弹窗的按钮组件`和`弹窗组件` 的关联
@@ -35,20 +63,7 @@ type ElLick = GetItemOrItem<React.RefObject<HTMLElement> | HTMLElement>;
  *   );
  * };
  */
-const useFloatHandler = ({
-  handler,
-  float,
-  opts,
-}: {
-  handler: ElLick;
-  float: ElLick;
-  opts?: {
-    /** handler不使用toggle模式, 点击时只负责打开float */
-    disableHandlerToggle?: boolean;
-    /** 窗口失焦时, 不关闭float */
-    disableWindowBlur?: boolean;
-  };
-}) => {
+const useFloatHandler: UseFloatHandler = ({ handler, float, opts }) => {
   const disableHandlerToggle = opts?.disableHandlerToggle ?? false;
   const disableWindowBlur = opts?.disableWindowBlur ?? false;
 
@@ -94,6 +109,21 @@ const useFloatHandler = ({
     open,
     toggle,
     close,
+  };
+};
+
+useFloatHandler.simple = (opts) => {
+  const handlerRef = useRef<any>(null);
+  const floatRef = useRef<any>(null);
+  const result = useFloatHandler({
+    handler: handlerRef,
+    float: floatRef,
+    opts,
+  });
+  return {
+    handlerRef,
+    floatRef,
+    ...result,
   };
 };
 

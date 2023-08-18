@@ -82,6 +82,24 @@ const App = () => {
 };
 ```
 
+```jsx
+import React, { useRef } from "react";
+import { useFloatHandler } from "juln-hooks";
+
+const {
+  handlerRef,
+  floatRef,
+  isShow: menuIsShow,
+  close: closeMenu,
+  toggle,
+} = useFloatHandler.simple({
+  /** handler不使用toggle模式, 点击时只负责打开float */
+  disableHandlerToggle: false,
+  /** 窗口失焦时, 不关闭float */
+  disableWindowBlur: false,
+});
+```
+
 ## useAutoFontSize
 
 文字超出容器时，追加一个 className
