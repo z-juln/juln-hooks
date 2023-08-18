@@ -17,25 +17,3 @@
 ## useIsBrowser
 
 用于 ssr 如 next.js, 判断当前是浏览器环境还是 node.js 环境
-
-## useQueryParams
-
-```jsx
-import { useAutoFontSize } from "juln-hooks";
-
-const ScheduleDetailPage = () => {
-  const [queryParams, setQueryParams] = useQueryParams(["id", "time"]);
-
-  return (
-    <>
-      <p>id: {queryParams.id}</p>
-      <p>time: {queryParams.time}</p>
-      <p onClick={() => setQueryParams({ time: "20220109" })}>
-        set time = 20220109
-      </p>
-    </>
-  );
-};
-
-export default ScheduleDetailPage;
-```

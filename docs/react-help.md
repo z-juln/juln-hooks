@@ -12,4 +12,9 @@ const Tools = [<div />, <div />, <div />];
 
 const ToolBar = reactNodeArray_join(Tools, <hr />);
 // [<div />, <hr />, <div />, <hr />, <div />]
+
+// or
+const ToolBar2 = reactNodeArray_join(Tools, (index, splitIndex) => (
+  <hr key={`split-${splitIndex}`} />
+));
 ```

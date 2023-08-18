@@ -12,8 +12,6 @@ juln 自己的 hooks 和 react-help 集合（已完全支持 tree-shaking）
 
 ### useIsBrowser
 
-### useQueryParams
-
 ## [defineStore](/docs/define-store.md)
 
 基于 [`recoil`](https://recoiljs.org/), 更舒服的编写 store

@@ -13,7 +13,6 @@ export {
   useCheckUnMounted,
   useIsBrowser,
 } from "./hooks/mount";
-export { default as useQueryParams } from "./hooks/useQueryParams";
 export { default as useLockRatio } from "./hooks/useLockRatio";
 export { default as useAutoFontSize } from "./hooks/useAutoFontSize";
 
