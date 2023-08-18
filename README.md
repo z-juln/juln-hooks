@@ -40,4 +40,8 @@ juln 自己的 hooks 和 react-help 集合（已完全支持 tree-shaking）
 
 ## [特殊 hooks](/docs/other-hooks.md)
 
+### useLockRatio
+
+### useFloatHandler
+
 ### useAutoFontSize

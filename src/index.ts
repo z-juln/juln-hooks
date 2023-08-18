@@ -14,6 +14,7 @@ export {
   useIsBrowser,
 } from "./hooks/mount";
 export { default as useLockRatio } from "./hooks/useLockRatio";
+export { default as useFloatHandler } from "./hooks/useFloatHandler";
 export { default as useAutoFontSize } from "./hooks/useAutoFontSize";
 
 // react-help
