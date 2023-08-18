@@ -1,6 +1,6 @@
 {
   "name": "juln-hooks",
-  "version": "1.1.18",
+  "version": "1.1.19",
   "description": "juln 自己的 hooks 和 react-help 集合 (已完全支持 tree-shaking)",
   "main": "./lib/index.js",
   "module": "./es/index.js",

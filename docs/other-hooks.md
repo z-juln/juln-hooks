@@ -68,27 +68,15 @@ const App = () => {
   return (
     <>
       <button ref={handler}>更多操作</button>
-      <div ref={menu}>
-        菜单
-        <ul>
-          <li
-            onClick={() => {
-              // TODO
-              closeMenu();
-            }}
-          >
-            添加
-          </li>
-          <li
-            onClick={() => {
-              // TODO
-              closeMenu();
-            }}
-          >
-            删除
-          </li>
-        </ul>
-      </div>
+      {menuIsShow && (
+        <div ref={menu}>
+          菜单
+          <ul>
+            <li onClick={() => { console.log('添加'); closeMenu(); }}>添加</li>
+            <li onClick={() => { console.log('删除'); closeMenu(); }}>删除</li>
+          </ul>
+        </div>
+      )}
     </>
   );
 };

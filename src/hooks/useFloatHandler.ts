@@ -4,7 +4,37 @@ type GetItemOrItem<T> = (() => T) | T;
 
 type ElLick = GetItemOrItem<React.RefObject<HTMLElement> | HTMLElement>;
 
-/** 处理类似于 `打开弹窗的按钮组件`和`弹窗组件` 的关联 */
+/**
+ * 处理类似于 `打开弹窗的按钮组件`和`弹窗组件` 的关联
+ *
+ * @example
+ * const App = () => {
+ *   const handler = useRef<HTMLButtonElement>(null);
+ *   const menu = useRef<HTMLDivElement>(null);
+ *   const { isShow: menuIsShow, close: closeMenu, toggle } = useFloatHandler({
+ *     handler,
+ *     float: menu,
+ *     opts: {
+ *       disableHandlerToggle: false,
+ *       disableWindowBlur: false,
+ *     },
+ *   });
+ *   return (
+ *     <>
+ *       <button ref={handler}>更多操作</button>
+ *       {menuIsShow && (
+ *         <div ref={menu}>
+ *           菜单
+ *           <ul>
+ *             <li onClick={() => { console.log('添加'); closeMenu(); }}>添加</li>
+ *             <li onClick={() => { console.log('删除'); closeMenu(); }}>删除</li>
+ *           </ul>
+ *         </div>
+ *       )}
+ *     </>
+ *   );
+ * };
+ */
 const useFloatHandler = ({
   handler,
   float,
