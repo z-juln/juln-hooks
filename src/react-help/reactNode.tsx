@@ -1,4 +1,7 @@
+import React, { useEffect } from "react";
+import { render } from "rc-util/lib/React/render";
 import type { ReactNode } from "react";
+import type { PromiseFn } from "@juln/type-fest";
 
 /**
  * 数组的item的每个间隔都加入node
@@ -32,3 +35,18 @@ export const reactNodeArray_join = (
   });
   return result;
 };
+
+/** 兼容react18的waring */
+export const renderPromise: PromiseFn<typeof render> = (node, container) =>
+  new Promise<void>((resolve) => {
+    const Root: React.FC<{
+      onMount: () => void;
+      children: React.ReactNode;
+    }> = ({ onMount, children }) => {
+      useEffect(() => {
+        onMount();
+      }, []);
+      return <>{children}</>;
+    };
+    render(<Root onMount={resolve}>{node}</Root>, container);
+  });

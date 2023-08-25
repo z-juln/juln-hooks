@@ -1,6 +1,6 @@
 {
   "name": "juln-hooks",
-  "version": "1.1.21",
+  "version": "1.1.22",
   "description": "juln 自己的 hooks 和 react-help 集合 (已完全支持 tree-shaking)",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -51,10 +51,12 @@
   "dependencies": {
     "@babel/runtime": "^7.22.6",
     "@juln/change-case": "^1.0.0",
-    "@juln/type-fest": "^1.1.7",
+    "@juln/type-fest": "^1.1.8",
     "@mixer/postmessage-rpc": "^1.1.4",
     "eventemitter3": "^5.0.1",
     "nanoid": "^4.0.2",
+    "rc-util": "^5.36.0",
+    "throttle-debounce": "^5.0.0",
     "tslib": "^2.6.1"
   },
   "devDependencies": {
@@ -66,6 +68,7 @@
     "@types/jest": "^27.4.0",
     "@types/qs": "^6.9.7",
     "@types/react": "^17.0.38",
+    "@types/throttle-debounce": "^5.0.0",
     "babel-plugin-import": "^1.13.6",
     "chalk": "^4.0.0",
     "del": "5",

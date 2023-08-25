@@ -13,6 +13,10 @@ export {
   useCheckUnMounted,
   useIsBrowser,
 } from "./hooks/mount";
+export {
+  useDebounceState,
+  useThrottleState,
+} from "./hooks/useThrottleOrDebounceState";
 export { default as useLockRatio } from "./hooks/useLockRatio";
 export { default as useFloatHandler } from "./hooks/useFloatHandler";
 export { default as useAutoFontSize } from "./hooks/useAutoFontSize";
