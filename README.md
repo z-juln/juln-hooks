@@ -1,6 +1,12 @@
 # juln-hooks
 
-juln 自己的 hooks 和 react-help 集合（已完全支持 tree-shaking）
+实用的 react-hooks 和 react-help 集合（已完全支持 tree-shaking）
+
+可以算是对 [ahooks](https://ahooks.js.org/) 的补充, 建议两者结合使用, 需要哪些用哪些
+
+## 安装
+
+`npm i juln-hooks -S` or `yarn add juln-hooks -S`
 
 ## [通用 hooks](/docs/common-hooks.md)
 
